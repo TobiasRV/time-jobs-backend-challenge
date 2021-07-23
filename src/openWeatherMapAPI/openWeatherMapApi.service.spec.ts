@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
 import { OpenWeatherMapService } from './openWeatherMapApi.service';
 import fetch from 'node-fetch';
 import { mocked } from 'ts-jest/utils';

@@ -16,6 +16,9 @@ describe('WeatherService', () => {
       weather.city = city;
       return weather;
     }),
+    updateOne: jest.fn(() => {
+      return {};
+    }),
   };
 
   beforeEach(async () => {
@@ -44,5 +47,9 @@ describe('WeatherService', () => {
   it('should responde with a weather object', async () => {
     await expect(service.findByCity('Madrid')).resolves.toBeInstanceOf(Weather);
     expect(mockWeatherModel.findOne).toHaveBeenCalled();
+  });
+  it('should call update function', async () => {
+    expect(service.update(20, 'Madrid'));
+    expect(mockWeatherModel.updateOne).toHaveBeenCalled();
   });
 });
