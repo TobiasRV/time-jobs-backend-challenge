@@ -38,10 +38,7 @@ export class WeatherController {
     if (attemtps <= 3) {
       const response = new Array<WeatherResponseDto>();
       for (const city of cities) {
-        const apiUrl = `${
-          process.env.OPENWEATHERMAP_API_URL ||
-          'https://api.openweathermap.org/data/2.5'
-        }/weather?q=${city}&units=metric&appid=31867d244f6658cf68328775fbfd49d9`;
+        const apiUrl = `${process.env.OPENWEATHERMAP_API_URL}/weather?q=${city}&units=metric&appid=31867d244f6658cf68328775fbfd49d9`;
         const weather = await this.weatherService.findByCity(city);
         if (
           weather &&
