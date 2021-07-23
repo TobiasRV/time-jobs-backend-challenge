@@ -35,7 +35,7 @@ const apiResponse = {
   },
   timezone: 3600,
   id: 2643743,
-  name: 'London',
+  name: 'Berlin',
   cod: 200,
 };
 
@@ -54,6 +54,7 @@ describe('WeatherController (e2e)', () => {
         const response = new Weather();
         response.temperature = 10;
         response.city = 'London';
+        response.searchDate = new Date(Date.now());
         return response;
       } else {
         return null;
@@ -77,12 +78,12 @@ describe('WeatherController (e2e)', () => {
 
   it('/weather (GET) in database', async () => {
     return request(app.getHttpServer())
-      .get('/weather?city=London')
+      .get('/weather?cities[]=London')
       .expect(200)
       .then((res) => {
-        expect(res.body.temperature).toEqual(10);
-        expect(res.body.city).toEqual('London');
-        expect(res.body.attempts).toBeDefined();
+        expect(res.body[0].temperature).toEqual(10);
+        expect(res.body[0].city).toEqual('London');
+        expect(res.body[0].attempts).toBeDefined();
       });
   });
   it('/weather (GET) in api', async () => {
@@ -92,12 +93,30 @@ describe('WeatherController (e2e)', () => {
       }),
     );
     return request(app.getHttpServer())
-      .get('/weather?city=Berlin')
+      .get('/weather?cities[]=Berlin')
       .expect(200)
       .then((res) => {
-        expect(res.body.temperature).toBeDefined();
-        expect(res.body.city).toEqual('Berlin');
-        expect(res.body.attempts).toBeDefined();
+        expect(res.body[0].temperature).toEqual(294.22);
+        expect(res.body[0].city).toEqual('Berlin');
+        expect(res.body[0].attempts).toBeDefined();
+      });
+  });
+  it('/weather (GET) with two cities', async () => {
+    mocked(fetch).mockImplementation(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(apiResponse),
+      }),
+    );
+    return request(app.getHttpServer())
+      .get('/weather?cities[]=Berlin&cities[]=London')
+      .expect(200)
+      .then((res) => {
+        expect(res.body[0].temperature).toEqual(294.22);
+        expect(res.body[0].city).toEqual('Berlin');
+        expect(res.body[0].attempts).toBeDefined();
+        expect(res.body[1].temperature).toEqual(10);
+        expect(res.body[1].city).toEqual('London');
+        expect(res.body[1].attempts).toBeDefined();
       });
   });
   it('/weather (GET) HttpExecption', async () => {
@@ -107,12 +126,12 @@ describe('WeatherController (e2e)', () => {
       }),
     );
     return request(app.getHttpServer())
-      .get('/weather?city=Berlinasd')
+      .get('/weather?cities[]=Berlinasd')
       .expect(404)
       .then((res) => {
         expect(res.body.code).toEqual('404');
         expect(res.body.timestamp).toBeDefined();
-        expect(res.body.path).toEqual('/weather?city=Berlinasd');
+        expect(res.body.path).toEqual('/weather?cities[]=Berlinasd');
         expect(res.body.method).toEqual('GET');
         expect(res.body.message).toEqual('city not found');
       });
