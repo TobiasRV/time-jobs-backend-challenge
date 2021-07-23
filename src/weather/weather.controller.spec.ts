@@ -14,6 +14,7 @@ describe('WeatherController', () => {
         return {
           temperature: 20,
           city: 'Barcelona',
+          searchDate: new Date(Date.now()),
         };
       } else return null;
     }),
@@ -21,6 +22,7 @@ describe('WeatherController', () => {
       return {
         temperature,
         city,
+        searchDate: new Date(Date.now()),
       };
     }),
   };
@@ -67,7 +69,29 @@ describe('WeatherController', () => {
       attempts: expect.any(Number),
     });
     expect(mockOpenWeatherMapService.getWeather).toHaveBeenCalled();
-    expect(mockWeatherService.create).toHaveBeenCalledTimes(1);
+    expect(mockWeatherService.create).toHaveBeenCalled();
+  });
+  it('should respond with a weatherResponseDTO from the api when sending city and state', async () => {
+    await expect(
+      controller.getWeather('Seville', 'Andalusia'),
+    ).resolves.toEqual({
+      temperature: 20,
+      city: 'Seville,Andalusia',
+      attempts: expect.any(Number),
+    });
+    expect(mockOpenWeatherMapService.getWeather).toHaveBeenCalled();
+    expect(mockWeatherService.create).toHaveBeenCalled();
+  });
+  it('should respond with a weatherResponseDTO from the api when sending city, state and country', async () => {
+    await expect(
+      controller.getWeather('Seville', 'Andalusia', 'Spain'),
+    ).resolves.toEqual({
+      temperature: 20,
+      city: 'Seville,Andalusia,Spain',
+      attempts: expect.any(Number),
+    });
+    expect(mockOpenWeatherMapService.getWeather).toHaveBeenCalled();
+    expect(mockWeatherService.create).toHaveBeenCalled();
   });
   it('takes more than 3 attemtps', async () => {
     await expect(
