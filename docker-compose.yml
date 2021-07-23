@@ -1,0 +1,35 @@
+version: "3"
+services:
+  nodeapp:
+    container_name: nodeapp
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "3000:3000"
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    environment:
+      WAIT_HOSTS: mongodb:27017
+      OPENWEATHERMAP_API_URL: https://api.openweathermap.org/data/2.5
+      OPENWEATHERMAP_API_Key: 31867d244f6658cf68328775fbfd49d9
+      DATABASE_URI: mongodb://mongo:27017/timejobschallenge
+
+    networks:
+      - node-webapp-network
+  mongodb:
+    container_name: mongo
+    image: mongo:4.4.6
+    volumes:
+      - ~/mongo:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - node-webapp-network
+networks:
+  node-webapp-network:
+    driver: bridge
