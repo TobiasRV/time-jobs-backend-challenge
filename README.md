@@ -28,6 +28,13 @@
 
 ## Installation
 
+## Docker
+```bash
+docker-compose build
+docker-compose up
+```
+
+## Local
 ```bash
 $ npm install
 ```
