@@ -79,7 +79,10 @@ describe('WeatherService', () => {
     );
   });
   it('takes more than 3 attemtps', async () => {
-    await expect(service.getWeather(correctApiURL, 4)).rejects.toThrow(
+    const mockMath = Object.create(global.Math);
+    mockMath.random = () => 0.01;
+    global.Math = mockMath;
+    await expect(service.getWeather(correctApiURL)).rejects.toThrow(
       HttpException,
     );
   });

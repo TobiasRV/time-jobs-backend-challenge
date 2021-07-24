@@ -8,24 +8,30 @@ import { IOpenWeatherMapResponse } from './interfaces/openWeatherMapResponse.int
 @UseFilters(new HttpErrorFilter())
 @Injectable()
 export class OpenWeatherMapService {
-  async getWeather(url: string,attempts = 1): Promise<IOpenWeatherMapResponse> {
-    if (attempts > 3)
+  async getWeather(url: string): Promise<IOpenWeatherMapResponse> {
+    let attempts = 1;
+    let response = null;
+    while (attempts <= 3 && !response) {
+      if (Math.random() > 0.15) {
+        response = await fetch(url);
+      } else {
+        attempts++;
+      }
+    }
+    if (response) {
+      const responseJson = await response.json();
+      if (responseJson.cod === 200) {
+        responseJson as IOpenWeatherMapResponse;
+        responseJson.attempts = attempts;
+        return responseJson;
+      } else {
+        throw new HttpException(responseJson.message, responseJson.cod);
+      }
+    } else {
       throw new HttpException(
         statusMessages.OPENWEATHERMAP_API_ERROR,
         statusCodes.SERVICE_UNAVAILABLE,
       );
-    if (Math.random() <= 0.15) {
-      attempts++;
-      this.getWeather(url, attempts);
-    }
-    const response = await fetch(url);
-    const responseJson = await response.json();
-    if (responseJson.cod === 200) {
-      responseJson as IOpenWeatherMapResponse;
-      responseJson.attempts = attempts;
-      return responseJson;
-    } else {
-      throw new HttpException(responseJson.message, responseJson.cod);
     }
   }
 }
