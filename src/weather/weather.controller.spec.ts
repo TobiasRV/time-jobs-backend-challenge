@@ -1,4 +1,3 @@
-import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenWeatherMapService } from '../openWeatherMapAPI/openWeatherMapApi.service';
 
@@ -32,6 +31,7 @@ describe('WeatherController', () => {
         main: {
           temp: 20,
         },
+        attempts: 1,
       };
     }),
   };
@@ -103,10 +103,5 @@ describe('WeatherController', () => {
     ]);
     expect(mockOpenWeatherMapService.getWeather).toHaveBeenCalled();
     expect(mockWeatherService.create).toHaveBeenCalled();
-  });
-  it('takes more than 3 attemtps', async () => {
-    await expect(controller.getWeather(['Mallorca'], 4)).rejects.toThrow(
-      HttpException,
-    );
   });
 });

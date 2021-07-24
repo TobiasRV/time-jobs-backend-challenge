@@ -41,4 +41,5 @@ export interface IOpenWeatherMapResponse {
   id: number;
   name: string;
   cod: number;
+  attempts: number;
 }

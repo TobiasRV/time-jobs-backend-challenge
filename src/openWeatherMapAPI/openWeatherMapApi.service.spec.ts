@@ -78,4 +78,9 @@ describe('WeatherService', () => {
       HttpException,
     );
   });
+  it('takes more than 3 attemtps', async () => {
+    await expect(service.getWeather(correctApiURL, 4)).rejects.toThrow(
+      HttpException,
+    );
+  });
 });

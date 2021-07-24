@@ -2,12 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpErrorFilter } from './utils/httpError.filter';
+import { ResponseTimeInterceptor } from './interceptors/responseTime.interceptor';
 dotenv.config({ path: __dirname + '/.env' });
 
 async function bootstrap() {
   const port = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
-  app.useGlobalInterceptors();
+  app.useGlobalInterceptors(new ResponseTimeInterceptor());
+  app.useGlobalFilters(new HttpErrorFilter());
   const config = new DocumentBuilder()
     .setTitle('Nest API')
     .setDescription('The description of the API')
