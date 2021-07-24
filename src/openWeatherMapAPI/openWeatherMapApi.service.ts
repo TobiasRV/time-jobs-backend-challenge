@@ -12,9 +12,13 @@ export class OpenWeatherMapService {
     let attempts = 1;
     let response = null;
     while (attempts <= 3 && !response) {
-      if (Math.random() > 0.15) {
-        response = await fetch(url);
-      } else {
+      try {
+        if (Math.random() > 1) {
+          response = await fetch(url);
+        } else {
+          throw new Error();
+        }
+      } catch (error) {     
         attempts++;
       }
     }
