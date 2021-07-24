@@ -8,10 +8,7 @@ import { IOpenWeatherMapResponse } from './interfaces/openWeatherMapResponse.int
 @UseFilters(new HttpErrorFilter())
 @Injectable()
 export class OpenWeatherMapService {
-  async getWeather(
-    url: string,
-    attempts = 1,
-  ): Promise<IOpenWeatherMapResponse> {
+  async getWeather(url: string,attempts = 1): Promise<IOpenWeatherMapResponse> {
     if (attempts > 3)
       throw new HttpException(
         statusMessages.OPENWEATHERMAP_API_ERROR,

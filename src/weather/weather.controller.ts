@@ -29,37 +29,23 @@ export class WeatherController {
   @ApiServiceUnavailableResponse()
   @ApiQuery({ name: 'cities', required: true, isArray: true })
   @Get()
-  async getWeather(
-    @Query('cities') cities: string[],
-  ): Promise<WeatherResponseDto[]> {
+  async getWeather(@Query('cities') cities: string[]): Promise<WeatherResponseDto[]> {
     const response = new Array<WeatherResponseDto>();
     for (const city of cities) {
       const apiUrl = `${process.env.OPENWEATHERMAP_API_URL}/weather?q=${city}&units=metric&appid=31867d244f6658cf68328775fbfd49d9`;
       const weather = await this.weatherService.findByCity(city);
       if (weather) {
-        if (
-          weather.searchDate.setHours(weather.searchDate.getHours() + 1) >=
-          Date.now()
-        ) {
+        if (weather.searchDate.setHours(weather.searchDate.getHours() + 1) >= Date.now()) {
           response.push(parseResponse(weather.temperature, weather.city, 1));
         } else {
-          const apiResponse = await this.openWeatherApiService.getWeather(
-            apiUrl,
-          );
+          const apiResponse = await this.openWeatherApiService.getWeather(apiUrl);
           await this.weatherService.update(apiResponse.main.temp, city);
-          response.push(
-            parseResponse(apiResponse.main.temp, city, apiResponse.attempts),
-          );
+          response.push(parseResponse(apiResponse.main.temp, city, apiResponse.attempts));
         }
       } else {
         const apiResponse = await this.openWeatherApiService.getWeather(apiUrl);
-        const savedWeather = await this.weatherService.create(
-          apiResponse.main.temp,
-          city,
-        );
-        response.push(
-          parseResponse(savedWeather.temperature, city, apiResponse.attempts),
-        );
+        const savedWeather = await this.weatherService.create(apiResponse.main.temp,city);
+        response.push(parseResponse(savedWeather.temperature, city, apiResponse.attempts));
       }
     }
     return response;
